@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  app:
+    build:
+      args:
+        user: mattj
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: matt-app
+    container_name: matt-app
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - 5173:5173
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/app/php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - matt-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: matt-nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - matt-net
+
+networks:
+  matt-net:
+    driver: bridge
